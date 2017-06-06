@@ -38,29 +38,22 @@ function generate_groupings(num_students,num_groups){
 	for (g = 1; g <= num_groups; g++ ){
 		groups[g-1] = [g];
 	}
-	console.log(groups)
 	
 	// tree of possible groupings is 'num_students' levels deep
-	for (student_index = 1; 1 <= num_students; student_index++){
-		console.log(student_index)
-		
+	for (student_index = 1; student_index <= num_students; student_index++){
 		// iterating through each group currently in the 'groups' array
-		new_groups = [];
-		for (group_index = 0; group_index < groups.length; group_index++){
-			
+		var new_groups = [];
+		for (node_index = 0, L = groups.length; node_index < L; node_index++){
+			group = groups[node_index]
 			// for each grouping at the bottom level we append 'num_groups' children
-			group = groups[group_index]
-			for (g = 1; g <= num_groups; g++)  {
-				group.concat(g)
-				new_groups.push( group )
+			for (group_index = 1; group_index <= num_groups; group_index++)  {
+				var new_group = group.concat([group_index])
+				new_groups.push( new_group )
 			}
-
-		groups = new_groups
-		
 		}
+		groups = new_groups
 	}
-	
 	return groups
 }
 
-generate_groupings(4,2)
+console.log(generate_groupings(4,2))
