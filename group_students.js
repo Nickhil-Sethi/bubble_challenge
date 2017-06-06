@@ -1,7 +1,7 @@
 function generate_groupings(num_students,num_groups){
 
 	/* Generates all possible groupings of num_students students 
-	into int num_groups groups. Implemented via dynamic programming.
+	into int num_groups groups. 
 
 	Parameters
 	__________
@@ -28,18 +28,39 @@ function generate_groupings(num_students,num_groups){
 	______ 
 
 	ValueError : if number of groups exceedes number of students */
+
 	if (num_students < num_groups) {
-		alert('number of groups must be less than or equal to number of students');
+		console.log('number of groups must be less than or equal to number of students');
+		return;
 	}
 
-	var groups = [ [x] for (x in _.range(num_groups) )];
-	for (i=1;1<num_students;i++){
+	var groups = [];
+	for (g = 1; g <= num_groups; g++ ){
+		groups[g-1] = [g];
+	}
+	console.log(groups)
+	
+	// tree of possible groupings is 'num_students' levels deep
+	for (student_index = 1; 1 <= num_students; student_index++){
+		console.log(student_index)
 		
-		groups = [ for (group of groups) for c in _.range(num_groups) x + [c] ];
+		// iterating through each group currently in the 'groups' array
+		new_groups = [];
+		for (group_index = 0; group_index < groups.length; group_index++){
 			
-		}
+			// for each grouping at the bottom level we append 'num_groups' children
+			group = groups[group_index]
+			for (g = 1; g <= num_groups; g++)  {
+				group.concat(g)
+				new_groups.push( group )
+			}
+
+		groups = new_groups
 		
-		return groups;
+		}
+	}
+	
+	return groups
 }
 
 generate_groupings(4,2)
