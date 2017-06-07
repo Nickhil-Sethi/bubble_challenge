@@ -6,37 +6,6 @@
   math = require('mathjs');
 
   generate_groupings = function(num_students, num_groups) {
-    /*
-    	Generates all possible groupings of num_students students 
-    	into int num_groups groups. 
-    
-    	Parameters
-    	__________
-    
-    	num_students : type int 
-    		number of students
-    
-    	num_groups : type int 
-    		number of groups
-    
-    	Returns
-    	_______ 
-    
-    	groups : type list[list]
-    		
-    		list of lists, with each element representing a allocation of students
-    		into groups e.g. 
-    
-    		groups = [0, 2, 1]
-    
-    		means student 0 is in group 0, student 1 in group 2, student 2 in group 1.
-    
-    	Raises
-    	______ 
-    
-    	ValueError : if number of groups exceedes number of students
-    */
-
     var group, group_index, groups, new_group, new_groups, student_index, x, _i, _j, _k, _len;
     if (num_students < num_groups) {
       console.log('number of groups must be less than or equal to number of students');
@@ -65,25 +34,6 @@
   };
 
   check_validity = function(grouping, students, num_groups) {
-    /*
-    	Checks validity of one particular grouping of students against traits in students (dict).
-    
-    	Parameters
-    	__________ 
-    
-    	grouping : type list[int]
-    		grouping of len(grouping) students into groups
-    
-    	students : type list[dict]
-    		list of dictionary (unpacked from json) of students with traits
-    
-    	Returns
-    	_______ 
-    
-    	valid : type bool 
-    		True if grouping is valid according to requirements.
-    */
-
     var group, group_idx, num_noisy, num_understand, student1, student2, student_id, _, _i, _j, _k, _l, _len, _len1, _len2, _len3, _m, _ref;
     for (group_idx = _i = 1; 1 <= num_groups ? _i <= num_groups : _i >= num_groups; group_idx = 1 <= num_groups ? ++_i : --_i) {
       group = (function() {
@@ -99,7 +49,7 @@
       num_noisy = 0;
       for (_ = _j = 0, _len = group.length; _j < _len; _ = ++_j) {
         student_id = group[_];
-        if (students[student_id]['noisy'] === true) {
+        if (students[student_id].noisy === true) {
           num_noisy = num_noisy + 1;
         }
       }
@@ -109,7 +59,7 @@
       num_understand = 0;
       for (_ = _k = 0, _len1 = group.length; _k < _len1; _ = ++_k) {
         student_id = group[_];
-        if (students[student_id]['understands'] === true) {
+        if (students[student_id].understands === true) {
           num_understand = num_understand + 1;
         }
       }
@@ -120,7 +70,7 @@
         student1 = group[_l];
         for (_m = 0, _len3 = group.length; _m < _len3; _m++) {
           student2 = group[_m];
-          if (_ref = students[student1]['name'], __indexOf.call(students[student2]['fights_with'], _ref) >= 0) {
+          if (_ref = students[student1].name, __indexOf.call(students[student2].fights_with, _ref) >= 0) {
             return false;
           }
         }
@@ -130,26 +80,6 @@
   };
 
   unpack = function(group, students, num_groups) {
-    /*
-    	Unpacks a grouping expressed as a list into a list of lists of names (see below).
-    
-    	Parameters
-    	__________
-    
-    	group : type list[int]
-    		list of group indices, e.g. [1,0] student 0 to group 1, student 1 to group 0
-    
-    	Returns
-    	_______ 
-    
-    	unpacked : type list[list[str]], e.g.
-    		[
-    			["Ava","Daniel","Jayden"],
-    			["Madison","Noah","Mia"],
-    			["Olivia","Brianna","Gavin","Kaylee"]
-    		]
-    */
-
     var group_id, i, idx, unpacked, _i, _len;
     unpacked = (function() {
       var _i, _results;
@@ -161,26 +91,12 @@
     })();
     for (idx = _i = 0, _len = group.length; _i < _len; idx = ++_i) {
       group_id = group[idx];
-      unpacked[group_id - 1].push(students[idx]['name']);
+      unpacked[group_id - 1].push(students[idx].name);
     }
     return unpacked;
   };
 
   evenness = function(solution) {
-    /*computes how uniform the group size of a particular solution is.
-    
-    	Parameters
-    	__________
-    
-    	solution : list[list[str]]
-    		a potential solution to grouping problem
-    
-    	Returns
-    	_______ 
-    
-    	computes evenness (e.g. entropy, scaled by number of students)
-    */
-
     var element, entropy, _i, _len;
     entropy = 0;
     for (_i = 0, _len = solution.length; _i < _len; _i++) {
@@ -191,29 +107,10 @@
   };
 
   group_students = function(data) {
-    /*Generates all potential groupings of students,
-    	checks each one for validity, and returns the valid grouping
-    	with the most even group size. If no valid configuration is found
-    	returns json object expressing an error.
-    
-    	Parameters
-    	__________
-    
-    	data : type dict
-    		input data described in question prompt
-    
-    	Returns
-    	_______
-    
-    	json object
-    		{'grouping' : answer} or {'error' : 'impossible!'}
-    */
-
-    var argmin, e, group_size, grouping, num_groups, num_students, objective, solution, solution_stack, student_groupings, students, _i, _j, _len, _len1;
-    num_groups = data['groups'];
-    students = data['students'];
+    var argmin, e, grouping, num_groups, num_students, objective, solution, solution_stack, student_groupings, students, _i, _j, _len, _len1;
+    num_groups = data.groups;
+    students = data.students;
     num_students = students.length;
-    group_size = num_students;
     console.log('generating groupings...');
     student_groupings = generate_groupings(num_students, num_groups);
     console.log('computing valid solutions...');
@@ -228,14 +125,14 @@
     }
     if (solution_stack.length === 0) {
       return {
-        'error': 'impossible!'
+        error: 'impossible!'
       };
     } else {
       objective = "Infinity";
       argmin = null;
       for (_j = 0, _len1 = solution_stack.length; _j < _len1; _j++) {
         solution = solution_stack[_j];
-        e = evenness(solution['grouping']);
+        e = evenness(solution.grouping);
         if (e < objective) {
           objective = e;
           argmin = solution;
