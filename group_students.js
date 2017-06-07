@@ -235,6 +235,5 @@ if (require.main === module){
 	var imported = require('./config.js')
 	var input_data = imported["input_data"]
 	var soln = group_students(input_data)
-	// var soln = check_validity(groupings[0],input_data['students'],input_data['groups'])
 	console.log(soln)
 }
