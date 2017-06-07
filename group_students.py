@@ -123,7 +123,7 @@ def evenness(solution):
 
 	computes evenness (e.g. entropy, scaled by number of students)
 	"""
-	return -sum([len(x)*math.log(len(x)) for x in solution])
+	return sum([len(x)*math.log(len(x)) for x in solution])
 
 def group_students(data):
 	"""Generates all potential groupings of students,
@@ -160,11 +160,12 @@ def group_students(data):
 		return json.dumps({'error': 'impossible!'})
 	# else, select solution with most even group size
 	else:
-		objective = -float('infinity')
+		objective = float("infinity")
 		argmin = None
 		for solution in solution_stack:
 			e = evenness(solution['grouping'])
-			if e > objective:
+			print solution['grouping'], e
+			if e < objective:
 				objective = e
 				argmin = solution
 		return json.dumps(argmin)

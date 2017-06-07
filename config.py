@@ -3,7 +3,7 @@ input_data = {
 	"students" : [
         {"name": "Ava", "noisy": True, "understands": True, "fights_with": ["Noah", "Madison", "Gavin"]},
         {"name": "Madison", "noisy": False, "understands": False, "fights_with": ["Olivia", "Kaylee"]},
-        {"name": "Daniel", "noisy": True, "understands": True, "fights_with": []},      
+        {"name": "Daniel", "noisy": True, "understands": True, "fights_with": []},     
         {"name": "Olivia", "noisy": False, "understands": False, "fights_with": ["Mia"]},      
         {"name": "Noah", "noisy": False, "understands": True, "fights_with": ["Kaylee"]},      
         {"name": "Mia", "noisy": True, "understands": False, "fights_with": []},
@@ -13,6 +13,3 @@ input_data = {
         {"name": "Kaylee", "noisy": True, "understands": False, "fights_with": []}
     ]
 }
-
-if __name__=='__main__':
-	print data
