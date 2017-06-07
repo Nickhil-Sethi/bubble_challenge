@@ -77,12 +77,12 @@ function check_validity(grouping,students,num_groups){
 		True if grouping is valid according to requirements. */
 
 	// TODO : increment variable better name?
-	for (gg=1; gg <= num_groups; gg++){
+	for (group_idx=1; group_idx <= num_groups; group_idx++){
 		
 		// var group is a list of indices [1,2,3] s.t. students[x]
 		var group = [];
 		for (student_idx = 0; student_idx < grouping.length; student_idx++){
-			if (grouping[student_idx] == gg){
+			if (grouping[student_idx] == group_idx){
 				group.push(student_idx);
 			}
 		}
@@ -111,9 +111,9 @@ function check_validity(grouping,students,num_groups){
 		// check if students in group fight
 		for (i=0; i < group.length; i++) {
 			var student1 = group[i]
-			for (j=i+1; j < group.length; j++) {
+			for (j=0; j < group.length; j++) {
 				var student2 = group[j]
-				if (students[student1]['name'] in students[student2]['fights_with']){
+				if (students[student2]['fights_with'].indexOf(students[student1]['name']) !== -1){
 					return false
 				}
 			}
@@ -199,7 +199,6 @@ function group_students(data){
 	var num_students = students.length
 	var group_size = num_students 
 	
-
 	console.log('generating groupings...')
 	student_groupings = generate_groupings(num_students,num_groups)
 
@@ -217,12 +216,12 @@ function group_students(data){
 		return {'error': 'impossible!'}
 	} else {
 		// selecting solution with most even distribution of students
-		var objective = 0.
-		var argmin = null
+		var objective = "Infinity";
+		var argmin = null;
 		for (s=0; s < solution_stack.length; s++){
 			var solution = solution_stack[s]
 			var e = evenness(solution['grouping'])
-			if(e > objective){
+			if(e < objective){
 				objective = e
 				argmin = solution
 			}
