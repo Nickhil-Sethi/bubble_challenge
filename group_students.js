@@ -34,7 +34,7 @@
   };
 
   check_validity = function(grouping, students, num_groups) {
-    var group, group_idx, num_noisy, num_understand, student1, student2, student_id, _, _i, _j, _k, _l, _len, _len1, _len2, _len3, _m, _ref;
+    var group, group_idx, num_noisy, num_understand, student1, student2, student_id, _i, _j, _k, _l, _len, _len1, _len2, _len3, _m, _ref;
     for (group_idx = _i = 1; 1 <= num_groups ? _i <= num_groups : _i >= num_groups; group_idx = 1 <= num_groups ? ++_i : --_i) {
       group = (function() {
         var _j, _ref, _results;
@@ -47,8 +47,8 @@
         return _results;
       })();
       num_noisy = 0;
-      for (_ = _j = 0, _len = group.length; _j < _len; _ = ++_j) {
-        student_id = group[_];
+      for (_j = 0, _len = group.length; _j < _len; _j++) {
+        student_id = group[_j];
         if (students[student_id].noisy === true) {
           num_noisy = num_noisy + 1;
         }
@@ -57,8 +57,8 @@
         return false;
       }
       num_understand = 0;
-      for (_ = _k = 0, _len1 = group.length; _k < _len1; _ = ++_k) {
-        student_id = group[_];
+      for (_k = 0, _len1 = group.length; _k < _len1; _k++) {
+        student_id = group[_k];
         if (students[student_id].understands === true) {
           num_understand = num_understand + 1;
         }

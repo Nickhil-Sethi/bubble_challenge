@@ -43,7 +43,7 @@ check_validity = (grouping,students,num_groups) ->
 
         # assert no more than 2 students are noisy
         num_noisy = 0
-        for student_id, _ in group
+        for student_id in group
             if students[student_id].noisy == true
                 num_noisy = num_noisy+1
 
@@ -52,7 +52,7 @@ check_validity = (grouping,students,num_groups) ->
         
         # assert at least one student understands the material
         num_understand = 0;
-        for student_id, _ in group
+        for student_id in group
             if students[student_id].understands == true
                 num_understand=num_understand+1;
 
