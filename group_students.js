@@ -172,4 +172,58 @@ function evenness(solution){
 	return entropy
 }
 
+function group_students(data){
+	/* Generates all potential groupings of students,
+	checks each one for validity, and returns the valid grouping
+	with the most even group size. If no valid configuration is found
+	returns json object expressing an error.
+
+	Parameters
+	__________
+
+	data : type dict
+		input data described in question prompt
+
+	Returns
+	_______
+
+	json object
+		{'grouping' : answer} or {'error' : 'impossible!'} */
+
+
+	var num_groups = data['groups']
+	var students = data['students']
+	var num_students = len(students)
+	var group_size = num_students 
+	
+	// compute list of valid solutions
+	solution_stack = []
+	student_groupings = generate_groupings(num_students,num_groups)
+	for (g=0; g < student_groupings.length; g++) {
+		grouping = student_groupings[g]
+		if (check_validity(grouping,students,num_groups)){
+			solution_stack.append({'grouping' : unpack(grouping,students,num_groups)})
+		}
+	}
+	
+	// return error if no valid solutions
+	if (solution_stack.length == 0) {
+		return json.dumps({'error': 'impossible!'})
+	} else {
+		objective = -float('Infinity')
+		argmin = None
+		for (s=0; s < solution_stack.length; s++){
+			solution = solution_stack[s]
+			e = evenness(solution['grouping'])
+			if(e > objective){
+				objective = e
+				argmin = solution
+			}
+		}
+		return argmin
+	}
+
+}
+
+
 console.log(generate_groupings(4,2))
