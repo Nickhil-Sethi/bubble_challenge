@@ -1,3 +1,5 @@
+math = require 'mathjs'
+
 generate_groupings = (num_students,num_groups) ->
 	###
 	Generates all possible groupings of num_students students 
@@ -77,7 +79,7 @@ check_validity = (grouping,students,num_groups) ->
 
 		# assert no more than 2 students are noisy
 		num_noisy = 0
-		for _ , student_id in group
+		for student_id, _ in group
 			if students[student_id]['noisy'] == true
 				num_noisy = num_noisy+1
 
@@ -86,8 +88,8 @@ check_validity = (grouping,students,num_groups) ->
 		
 		# assert at least one student understands the material
 		num_understand = 0;
-		for i in [0..group.length-1]
-			if students[group[i]]['understands'] == true
+		for student_id, _ in group
+			if students[student_id]['understands'] == true
 				num_understand=num_understand+1;
 
 		if num_understand < 1
@@ -138,7 +140,7 @@ evenness = (solution) ->
 	Returns
 	_______ 
 
-	computes evenness (e.g. entropy, scaled by number of students) */
+	computes evenness (e.g. entropy, scaled by number of students) 
 	###
 
 	entropy = 0
@@ -146,17 +148,58 @@ evenness = (solution) ->
 		entropy = entropy + (element.length)*math.log(element.length)
 	return entropy
 
-input_data = require('./config.coffee').input_data
-groupings = generate_groupings(input_data['students'].length, input_data['groups'])
+group_students = (data) ->
+	###Generates all potential groupings of students,
+	checks each one for validity, and returns the valid grouping
+	with the most even group size. If no valid configuration is found
+	returns json object expressing an error.
 
-console.log unpack(groupings[0], input_data['students'], input_data['groups'])
+	Parameters
+	__________
 
+	data : type dict
+		input data described in question prompt
 
+	Returns
+	_______
 
+	json object
+		{'grouping' : answer} or {'error' : 'impossible!'} 
+	###
 
+	num_groups = data['groups']
+	students = data['students']
+	num_students = students.length
+	group_size = num_students 
+	
+	console.log('generating groupings...')
+	student_groupings = generate_groupings(num_students,num_groups)
 
+	console.log('computing valid solutions...')
+	solution_stack = []
+	for grouping in student_groupings
+		if check_validity(grouping,students,num_groups)
+			solution_stack.push({'grouping' : unpack(grouping,students,num_groups)})
+	
+	# return error if no valid solutions
+	if solution_stack.length == 0
+		return {'error': 'impossible!'}
+	else 
+		# selecting solution with most even distribution of students
+		objective = "Infinity"
+		argmin = null
+		for solution in solution_stack
+			e = evenness(solution['grouping'])
+			if e < objective
+				objective = e
+				argmin = solution
+			
+		
+		return argmin
 
-
+if require.main == module
+	input_data = require('./config.coffee').input_data
+	console.log group_students(input_data)
 
 
 
