@@ -225,5 +225,4 @@ function group_students(data){
 
 }
 
-
 console.log(generate_groupings(4,2))
