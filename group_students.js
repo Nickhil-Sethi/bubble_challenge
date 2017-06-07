@@ -1,3 +1,5 @@
+var math = require('mathjs')
+
 function generate_groupings(num_students,num_groups){
 
 	/* Generates all possible groupings of num_students students 
@@ -57,7 +59,7 @@ function generate_groupings(num_students,num_groups){
 }
 
 function check_validity(grouping,students,num_groups){
-	/* Checks validity of one particular grouping of students against traits in students_dict.
+	/* Checks validity of one particular grouping of students against traits in students (dict).
 
 	Parameters
 	__________ 
@@ -74,21 +76,22 @@ function check_validity(grouping,students,num_groups){
 	valid : type bool 
 		True if grouping is valid according to requirements. */
 
-	for (group_index=0; group_index < num_groups; group_index++){
+	// TODO : increment variable better name?
+	for (gg=1; gg <= num_groups; gg++){
 		
-		// extract student indices for students in group
-		var group = []
-		for (student_idx = 0; student_idx < grouping.length; student_index++){
-			if (grouping[student_idx] == group_index){
+		// var group is a list of indices [1,2,3] s.t. students[x]
+		var group = [];
+		for (student_idx = 0; student_idx < grouping.length; student_idx++){
+			if (grouping[student_idx] == gg){
 				group.push(student_idx);
 			}
 		}
 
 		// assert no more than 2 students are noisy
-		var num_noisy = 0
+		var num_noisy = 0;
 		for (i = 0; i < group.length; i++){
-			if (students[i]['noisy']){
-				num_noisy++
+			if (students[group[i]]['noisy'] == true){
+				num_noisy = num_noisy+1;
 			}
 		}
 		if (num_noisy > 2){
@@ -96,16 +99,15 @@ function check_validity(grouping,students,num_groups){
 		}
 		
 		// assert at least one student understands the material
-		var num_understand = 0
+		var num_understand = 0;
 		for (i=0 ; i < group.length; i++){
-			if (students[i]['understands']){
-				num_understand++
+			if (students[group[i]]['understands'] == true){
+				num_understand=num_understand+1;
 			}
 		}
 		if (num_understand < 1){
 			return false
 		}
-
 		// check if students in group fight
 		for (i=0; i < group.length; i++) {
 			var student1 = group[i]
@@ -141,12 +143,12 @@ function unpack(group,students,num_groups){
 	*/
 
 	var unpacked = []
-	for (i=0; i < num_groups; i++){
+	for (i=1; i <= num_groups; i++){
 		unpacked.push( [] )
 	}
 	for (idx=0; idx < group.length; idx++){
-		val = group[idx]
-		unpacked[val].push(students[idx]['name'])
+		val = group[idx];
+		unpacked[val-1].push(students[idx]['name'])
 	}
 	return unpacked
 }
@@ -164,10 +166,11 @@ function evenness(solution){
 	_______ 
 
 	computes evenness (e.g. entropy, scaled by number of students) */
+
 	var entropy = 0;
 	for (x=0; x < solution.length; x++){
 		element = solution[x]
-		entropy = entropy - (element.length)*math.log(element.length)
+		entropy = entropy + (element.length)*math.log(element.length)
 	}
 	return entropy
 }
@@ -193,28 +196,32 @@ function group_students(data){
 
 	var num_groups = data['groups']
 	var students = data['students']
-	var num_students = len(students)
+	var num_students = students.length
 	var group_size = num_students 
 	
-	// compute list of valid solutions
-	solution_stack = []
+
+	console.log('generating groupings...')
 	student_groupings = generate_groupings(num_students,num_groups)
+
+	console.log('computing valid solutions...')
+	solution_stack = []
 	for (g=0; g < student_groupings.length; g++) {
 		grouping = student_groupings[g]
 		if (check_validity(grouping,students,num_groups)){
-			solution_stack.append({'grouping' : unpack(grouping,students,num_groups)})
+			solution_stack.push({'grouping' : unpack(grouping,students,num_groups)})
 		}
 	}
 	
 	// return error if no valid solutions
 	if (solution_stack.length == 0) {
-		return json.dumps({'error': 'impossible!'})
+		return {'error': 'impossible!'}
 	} else {
-		objective = -float('Infinity')
-		argmin = None
+		// selecting solution with most even distribution of students
+		var objective = 0.
+		var argmin = null
 		for (s=0; s < solution_stack.length; s++){
-			solution = solution_stack[s]
-			e = evenness(solution['grouping'])
+			var solution = solution_stack[s]
+			var e = evenness(solution['grouping'])
 			if(e > objective){
 				objective = e
 				argmin = solution
@@ -225,4 +232,10 @@ function group_students(data){
 
 }
 
-console.log(generate_groupings(4,2))
+if (require.main === module){
+	var imported = require('./config.js')
+	var input_data = imported["input_data"]
+	var soln = group_students(input_data)
+	// var soln = check_validity(groupings[0],input_data['students'],input_data['groups'])
+	console.log(soln)
+}
