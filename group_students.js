@@ -55,17 +55,6 @@ function generate_groupings(num_students,num_groups){
 	}
 	return groups
 }
-function is_noisy(idx, students){
-	if student[idx]['noisy']{
-		return 1
-	} else {
-		return 0
-	};
-}
-
-function add(a,b){
-	return a + b;
-}
 
 function check_validity(grouping,students,num_groups){
 	/* Checks validity of one particular grouping of students against traits in students_dict.
@@ -130,5 +119,35 @@ function check_validity(grouping,students,num_groups){
 
 	}
 	return true
+}
+function unpack(group,students,num_groups){
+	/* Unpacks a grouping expressed as a list into a list of lists of names (see below).
+
+	Parameters
+	__________
+
+	group : type list[int]
+		list of group indices, e.g. [1,0] student 0 to group 1, student 1 to group 0
+
+	Returns
+	_______ 
+
+	unpacked : type list[list[str]], e.g.
+		[
+			["Ava","Daniel","Jayden"],
+			["Madison","Noah","Mia"],
+			["Olivia","Brianna","Gavin","Kaylee"]
+		] 
+	*/
+
+	var unpacked = []
+	for (i=0; i < num_groups; i++){
+		unpacked.push( [] )
+	}
+	for (idx=0; idx < group.length; idx++){
+		val = group[idx]
+		unpacked[val].push(students[idx]['name'])
+	}
+	return unpacked
 }
 console.log(generate_groupings(4,2))
