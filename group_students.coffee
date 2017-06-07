@@ -170,7 +170,6 @@ group_students = (data) ->
 	num_groups = data['groups']
 	students = data['students']
 	num_students = students.length
-	group_size = num_students 
 	
 	console.log('generating groupings...')
 	student_groupings = generate_groupings(num_students,num_groups)
@@ -194,15 +193,8 @@ group_students = (data) ->
 				objective = e
 				argmin = solution
 			
-		
 		return argmin
 
 if require.main == module
 	input_data = require('./config.coffee').input_data
 	console.log group_students(input_data)
-
-
-
-
-
-
