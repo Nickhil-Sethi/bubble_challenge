@@ -40,7 +40,7 @@ function generate_groupings(num_students,num_groups){
 	}
 	
 	// tree of possible groupings is 'num_students' levels deep
-	for (student_index = 1; student_index <= num_students; student_index++){
+	for (student_index = 1; student_index < num_students; student_index++){
 		// iterating through each group currently in the 'groups' array
 		var new_groups = [];
 		for (node_index = 0, L = groups.length; node_index < L; node_index++){
@@ -150,4 +150,26 @@ function unpack(group,students,num_groups){
 	}
 	return unpacked
 }
+
+function evenness(solution){
+	/* computes how uniform the group size of a particular solution is.
+
+	Parameters
+	__________
+
+	solution : list[list[str]]
+		a potential solution to grouping problem
+
+	Returns
+	_______ 
+
+	computes evenness (e.g. entropy, scaled by number of students) */
+	var entropy = 0;
+	for (x=0; x < solution.length; x++){
+		element = solution[x]
+		entropy = entropy - (element.length)*math.log(element.length)
+	}
+	return entropy
+}
+
 console.log(generate_groupings(4,2))
