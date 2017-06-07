@@ -35,7 +35,7 @@ generate_groupings = (num_students,num_groups) ->
 		return
 	
 	groups = ([x] for x in [1..num_groups])
-	console.log groups
+
 	# tree of possible groupings is 'num_students' levels deep
 	for student_index in [2..num_students]
 		# iterating through each group currently in the 'groups' array
@@ -46,6 +46,120 @@ generate_groupings = (num_students,num_groups) ->
 				new_group = group.concat([group_index])
 				new_groups.push( new_group )
 		groups = new_groups
+
 	return groups
 
-console.log generate_groupings(4,3)
+check_validity = (grouping,students,num_groups) ->
+	###
+	Checks validity of one particular grouping of students against traits in students (dict).
+
+	Parameters
+	__________ 
+
+	grouping : type list[int]
+		grouping of len(grouping) students into groups
+
+	students : type list[dict]
+		list of dictionary (unpacked from json) of students with traits
+
+	Returns
+	_______ 
+
+	valid : type bool 
+		True if grouping is valid according to requirements.
+	###
+
+	# TODO : increment variable better name?
+	for group_idx in [1..num_groups]
+		
+		# var group is a list of indices [1,2,3] s.t. students[x]
+		group = (student_id for student_id in [0..grouping.length-1] when grouping[student_id] == group_idx)
+
+		# assert no more than 2 students are noisy
+		num_noisy = 0
+		for _ , student_id in group
+			if students[student_id]['noisy'] == true
+				num_noisy = num_noisy+1
+
+		if num_noisy > 2
+			return false
+		
+		# assert at least one student understands the material
+		num_understand = 0;
+		for i in [0..group.length-1]
+			if students[group[i]]['understands'] == true
+				num_understand=num_understand+1;
+
+		if num_understand < 1
+			return false
+
+		# check if students in group fight
+		for student1 in group
+			for student2 in group
+				if students[student1]['name'] in students[student2]['fights_with']
+					return false
+	return true
+
+unpack = (group,students,num_groups) ->
+	###
+	Unpacks a grouping expressed as a list into a list of lists of names (see below).
+
+	Parameters
+	__________
+
+	group : type list[int]
+		list of group indices, e.g. [1,0] student 0 to group 1, student 1 to group 0
+
+	Returns
+	_______ 
+
+	unpacked : type list[list[str]], e.g.
+		[
+			["Ava","Daniel","Jayden"],
+			["Madison","Noah","Mia"],
+			["Olivia","Brianna","Gavin","Kaylee"]
+		]
+	###
+
+	unpacked = ( [] for i in [1..num_groups] )
+	for group_id, idx in group
+		unpacked[group_id-1].push students[idx]['name'] 
+	return unpacked
+
+evenness = (solution) ->
+	###computes how uniform the group size of a particular solution is.
+
+	Parameters
+	__________
+
+	solution : list[list[str]]
+		a potential solution to grouping problem
+
+	Returns
+	_______ 
+
+	computes evenness (e.g. entropy, scaled by number of students) */
+	###
+
+	entropy = 0
+	for element in solution
+		entropy = entropy + (element.length)*math.log(element.length)
+	return entropy
+
+input_data = require('./config.coffee').input_data
+groupings = generate_groupings(input_data['students'].length, input_data['groups'])
+
+console.log unpack(groupings[0], input_data['students'], input_data['groups'])
+
+
+
+
+
+
+
+
+
+
+
+
+

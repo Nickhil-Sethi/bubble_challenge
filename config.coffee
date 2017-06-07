@@ -1,4 +1,4 @@
-input_data = {
+exports.input_data = {
 	"groups" : 3,
 	"students" : [
         {"name": "Ava", "noisy": true, "understands": true, "fights_with": ["Noah", "Madison", "Gavin"]},
